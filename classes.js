@@ -1,13 +1,11 @@
 class Sprite {
   constructor({
     position,
-    velocity,
     img,
     frames = { max: 1, hold: 10 },
     sprites,
     animate = false,
     rotation = 0,
-    scale = 1,
   }) {
     this.position = position;
     this.img = new Image();
@@ -22,7 +20,6 @@ class Sprite {
     this.opacity = 1;
 
     this.rotation = rotation;
-    this.scale = scale;
   }
   draw() {
     ctx.save();
@@ -36,6 +33,7 @@ class Sprite {
       -this.position.x - this.width / 2,
       -this.position.y - this.height / 2
     );
+
     ctx.drawImage(
       this.img,
       this.frames.val * this.width,
@@ -60,6 +58,7 @@ class Sprite {
     }
   }
 }
+
 class Monster extends Sprite {
   constructor({
     position,
@@ -69,10 +68,11 @@ class Monster extends Sprite {
     sprites,
     animate = false,
     rotation = 0,
-    scale = 1,
     isEnemy = false,
     name,
     attacks,
+    attitude,
+    lvl,
   }) {
     super({
       position,
@@ -83,15 +83,98 @@ class Monster extends Sprite {
       animate,
       rotation,
     });
-    this.health = 100;
+    this.lvl = lvl;
+    this.nextLvl = this.nextLvl ? this.nextLvl : 0;
+    this.nextLvl = this.nextLvl + this.lvl * 10;
+    this.exp = 0;
+    this.giveExp = Math.floor((this.lvl * 10 + 9) / 6);
+    this.capturedExp = this.lvl * 5;
+    this.attitude = attitude;
+    this.health = this.health ? this.health : this.lvl * 2;
+    for (let i = 0; i < this.lvl + 1; i++) {
+      this.health = this.health + Math.floor(Math.random() * 20);
+    }
+    this.healthMax = this.health;
     this.isEnemy = isEnemy;
     this.name = name;
     this.attacks = attacks;
+    this.frames = { ...frames, val: 0, elapsed: 0 };
   }
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.opacity;
+    ctx.translate(
+      this.position.x + this.width / 2,
+      this.position.y + this.height / 2
+    );
+    ctx.rotate(this.rotation);
+    ctx.translate(
+      -this.position.x - this.width / 2,
+      -this.position.y - this.height / 2
+    );
+    let x, y;
 
-  hit(healtBar, { recipient }) {
+    if (!this.isEnemy) {
+      (x = 64), (y = 0);
+      ctx.translate(
+        this.position.x + this.width / 2,
+        this.position.y + this.height / 2
+      );
+      ctx.scale(-1, 1);
+      ctx.rotate(this.rotation);
+      ctx.translate(
+        -this.position.x - this.width / 2,
+        -this.position.y - this.height / 2
+      );
+    } else {
+      (x = 0), (y = 0);
+    }
+
+    ctx.drawImage(
+      this.img,
+      x,
+      y + this.frames.val,
+      this.width,
+      this.width,
+      this.position.x,
+      this.position.y,
+      this.width,
+      this.width
+    );
+    ctx.restore();
+    if (!this.animate) return;
+
+    if (this.frames.max > 1) {
+      this.frames.elapsed++;
+    }
+
+    if (this.frames.elapsed % this.frames.hold === 0) {
+      if (this.frames.val < this.width * 3) this.frames.val += this.width;
+      else this.frames.val = 0;
+    }
+  }
+  levelUp({ recipient, sender }) {
+    sender.exp += recipient.giveExp;
+
+    if (sender.capturedExp <= sender.exp) {
+      let up = sender.exp - sender.capturedExp;
+      sender.health += Math.floor(Math.random() * 20);
+      sender.lvl++;
+
+      document.querySelector(
+        "#dialogueBox"
+      ).innerText = `LeveL Up ${sender.lvl}`;
+      if (up > 0) {
+        sender.exp = up;
+      }
+    }
+  }
+  hit(healtBar, healtText, { recipient }) {
+    document.querySelector(
+      healtText
+    ).innerText = `${recipient.health}/${recipient.healthMax}`;
     gsap.to(healtBar, {
-      width: `${recipient.health}%`,
+      width: `${(recipient.health * 100) / recipient.healthMax}%`,
     });
     gsap.to(recipient.position, {
       x: recipient.position.x + 10,
@@ -127,20 +210,22 @@ class Monster extends Sprite {
 
     let movemenDistance = 20;
     let healtBar = "#enemyHealtBar";
+    let healtText = "#enemyHp";
     let rotation = 1;
 
     if (this.isEnemy) {
       movemenDistance = -20;
       healtBar = "#playerHealthBar";
+      healtText = "#playerHp";
       rotation = -2.2;
     }
     recipient.health -= attack.damage;
     switch (attack.name) {
       case "Tackle":
-        this.tackle(movemenDistance, healtBar, { recipient });
+        this.tackle(movemenDistance, healtBar, healtText, { recipient });
         break;
       case "Fireball":
-        this.fireball(healtBar, rotation, {
+        this.fireball(healtBar, rotation, healtText, {
           recipient,
           renderedSprites,
         });
@@ -148,7 +233,7 @@ class Monster extends Sprite {
     }
   }
 
-  fireball(healtBar, rotation, { recipient, renderedSprites }) {
+  fireball(healtBar, rotation, healtText, { recipient, renderedSprites }) {
     audio.initFireball.play();
     const fireBallImage = new Image();
     fireBallImage.src = "./img/fireball.png";
@@ -173,12 +258,12 @@ class Monster extends Sprite {
       onComplete: () => {
         audio.fireballHit.play();
         renderedSprites.splice(1, 1);
-        this.hit(healtBar, { recipient });
+        this.hit(healtBar, healtText, { recipient });
       },
     });
   }
 
-  tackle(movemenDistance, healtBar, { recipient }) {
+  tackle(movemenDistance, healtBar, healtText, { recipient }) {
     const tl = gsap.timeline();
 
     tl.to(this.position, {
@@ -189,7 +274,7 @@ class Monster extends Sprite {
         duration: 0.1,
         onComplete: () => {
           audio.tackleHit.play();
-          this.hit(healtBar, { recipient });
+          this.hit(healtBar, healtText, { recipient });
         },
       })
       .to(this.position, {

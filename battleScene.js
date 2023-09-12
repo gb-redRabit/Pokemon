@@ -6,9 +6,6 @@ const battelBackground = new Sprite({
   img: battelBackgroundImage,
 });
 
-//dodać wiecje potworó oraz losowanie ich jako wrogów
-let enemyMonster, playerMonster, battleAnimationId, renderedSprites, queue;
-
 const initBattle = () => {
   document.querySelector("#userInterface").style.display = "block";
   document.querySelector("#dialogueBox").style.display = "none";
@@ -16,18 +13,39 @@ const initBattle = () => {
   document.querySelector("#playerHealthBar").style.width = "100%";
   document.querySelector("#attacksBox").replaceChildren();
 
-  enemyMonster = new Monster(monsters.Draggle);
-  playerMonster = new Monster(monsters.Emby);
+  enemyMonster = new Monster(enamys.Emby);
   renderedSprites = [enemyMonster, playerMonster];
   queue = [];
 
-  playerMonster.position.x = 290;
-  playerMonster.position.y = 330;
-  enemyMonster.position.x = 800;
-  enemyMonster.position.y = 100;
+  playerMonster.health = playerMonster.healthMax;
+  enemyMonster.lvl = Math.floor(Math.random() * 3 + 1);
+
+  document.querySelector("#enemyName").innerText = enemyMonster.name;
+  document.querySelector("#enemyLvl").innerText = enemyMonster.lvl;
+
+  document.querySelector("#playerName").innerText = playerMonster.name;
+  document.querySelector("#playerLvl").innerText = playerMonster.lvl;
+
+  playerMonster.position.x = 300;
+  playerMonster.position.y = 340;
+  enemyMonster.position.x = 810;
+  enemyMonster.position.y = 120;
+  enemyMonster.isEnemy = true;
+
+  gsap.to("#playerExpBar", {
+    width: `${(playerMonster.exp * 100) / playerMonster.capturedExp}%`,
+  });
+  console.log(playerMonster);
+  document.querySelector(
+    "#playerHp"
+  ).innerText = `${playerMonster.health}/${playerMonster.health}`;
+  document.querySelector(
+    "#enemyHp"
+  ).innerText = `${enemyMonster.health}/${enemyMonster.health}`;
 
   playerMonster.attacks.forEach((attack) => {
     const button = document.createElement("button");
+
     button.innerHTML = attack.name;
     document.getElementById("attacksBox").append(button);
   });
@@ -35,12 +53,22 @@ const initBattle = () => {
   document.querySelectorAll("button").forEach((item) => {
     item.addEventListener("click", (e) => {
       const selectedAttack = attacks[e.currentTarget.innerText];
+
       playerMonster.attack({
         attack: selectedAttack,
         recipient: enemyMonster,
         renderedSprites,
       });
       if (enemyMonster.health <= 0) {
+        queue.push(() => {
+          document.querySelector(
+            "#dialogueBox"
+          ).innerText = `${enemyMonster.giveExp} EXP`;
+          enemyMonster.levelUp({
+            recipient: enemyMonster,
+            sender: playerMonster,
+          });
+        });
         queue.push(() => {
           enemyMonster.faint();
         });
@@ -110,7 +138,8 @@ const animateBattel = () => {
     sprite.draw();
   });
 };
-
+initBattle();
+animateBattel();
 document.querySelector("#dialogueBox").addEventListener("click", (e) => {
   if (queue.length > 0) {
     queue[0]();

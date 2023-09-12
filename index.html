@@ -60,7 +60,17 @@
             padding: 12px;
           "
         >
-          <h1 style="font-size: 16px">Draggle</h1>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 10px;
+            "
+          >
+            <h1 id="enemyName" style="font-size: 16px"></h1>
+            <h1 id="enemyHp" style="font-size: 16px"></h1>
+          </div>
+          <h1 style="font-size: 16px">LvL: <span id="enemyLvl">1</span></h1>
           <div style="position: relative">
             <div
               style="
@@ -93,7 +103,17 @@
             padding: 12px;
           "
         >
-          <h1 style="font-size: 16px">Emble</h1>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 10px;
+            "
+          >
+            <h1 id="playerName" style="font-size: 16px"></h1>
+            <h1 id="playerHp" style="font-size: 16px"></h1>
+          </div>
+          <h1 style="font-size: 16px">LvL: <span id="playerLvl"></span></h1>
           <div style="position: relative">
             <div
               style="
@@ -108,6 +128,25 @@
                 background-color: rgb(19, 126, 5);
                 top: 0;
                 width: 100%;
+                height: 5px;
+                position: absolute;
+              "
+            ></div>
+          </div>
+          <div style="position: relative">
+            <div
+              style="
+                background-color: rgb(201, 201, 201);
+                margin-top: 10px;
+                height: 5px;
+              "
+            ></div>
+            <div
+              id="playerExpBar"
+              style="
+                background-color: rgb(8, 63, 56);
+                top: 0;
+                width: 0%;
                 height: 5px;
                 position: absolute;
               "
@@ -179,6 +218,7 @@
     <script src="data/audio.js"></script>
     <script src="data/attacks.js"></script>
     <script src="data/monsters.js"></script>
+    <script src="data/monstersEnemy.js"></script>
     <script src="data/startPlayer.js"></script>
     <script src="data/battleZones.js"></script>
     <script src="classes.js"></script>

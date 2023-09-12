@@ -1,4 +1,4 @@
-const monsters = {
+const enamys = {
   Emby: {
     position: {
       x: 0,
@@ -12,6 +12,7 @@ const monsters = {
       hold: 30,
     },
     lvl: 1,
+    attitude: "enemy",
     animate: true,
     name: "Embya",
     attacks: [attacks.Tackle, attacks.Fireball],
@@ -30,6 +31,7 @@ const monsters = {
       max: 4,
       hold: 30,
     },
+    attitude: "enemy",
     animate: true,
     name: "Draggle",
     attacks: [attacks.Tackle, attacks.Fireball],

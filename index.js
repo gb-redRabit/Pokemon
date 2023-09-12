@@ -1,6 +1,9 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+let enemyMonster, playerMonster, battleAnimationId, renderedSprites, queue;
+playerMonster = new Monster(monsters.Draggle);
+
 canvas.width = 1024;
 canvas.height = 576;
 
@@ -293,7 +296,7 @@ const animate = () => {
   }
 };
 
-animate();
+// animate();
 let lastKey = "";
 
 window.addEventListener("keydown", (e) => {
