@@ -71,7 +71,6 @@ class Monster extends Sprite {
     isEnemy = false,
     name,
     attacks,
-    attitude,
     lvl,
   }) {
     super({
@@ -89,7 +88,6 @@ class Monster extends Sprite {
     this.exp = 0;
     this.giveExp = Math.floor((this.lvl * 10 + 9) / 6);
     this.capturedExp = this.lvl * 5;
-    this.attitude = attitude;
     this.health = this.health ? this.health : this.lvl * 2;
     for (let i = 0; i < this.lvl + 1; i++) {
       this.health = this.health + Math.floor(Math.random() * 20);
