@@ -13,25 +13,26 @@ const initBattle = () => {
   document.querySelector("#enemyHealtBar").style.width = "100%";
   document.querySelector("#playerHealthBar").style.width = "100%";
   document.querySelector("#attacksBox").replaceChildren();
+  const randomMonster = Math.floor(Math.random() * monsters.length);
 
   enemyMonster = new Monster({
     position: {
       x: 0,
       y: 0,
     },
-    faceset: monsters.Cyclope.faceset,
+    faceset: monsters[randomMonster].faceset,
     img: {
-      src: monsters.Cyclope.img.src,
+      src: monsters[randomMonster].img.src,
     },
     frames: {
       max: 4,
       hold: 30,
     },
     lvl: 1,
-    type: monsters.Cyclope.type,
+    type: monsters[randomMonster].type,
     animate: true,
-    name: monsters.Cyclope.name,
-    attacks: monsters.Cyclope.attacks,
+    name: monsters[randomMonster].name,
+    attacks: monsters[randomMonster].attacks,
   });
   renderedSprites = [enemyMonster, activeMonsterPlayer];
   queue = [];
@@ -256,7 +257,7 @@ const initBattle = () => {
     });
 
     item.addEventListener("mouseenter", (e) => {
-      if (e.currentTarget.id !== "bag" || e.currentTarget.id !== "list") {
+      if (e.currentTarget.id !== "bag") {
         const selectedAttack = attacks[e.currentTarget.innerText];
         document.getElementById("attackType").innerText = selectedAttack.type;
         document.getElementById("attackType").style.color =

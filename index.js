@@ -1,6 +1,6 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-console.log(monsters);
+
 canvas.width = 1024;
 canvas.height = 576;
 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -33,25 +33,26 @@ const playerRightImage = new Image();
 playerRightImage.src = "./img/playerRight.png";
 
 let enemyMonster, playerMonster, battleAnimationId, renderedSprites, queue;
+const randomMonster = Math.floor(Math.random() * monsters.length);
 playerMonster = new Monster({
   position: {
     x: 0,
     y: 0,
   },
-  faceset: monsters.Reptile.faceset,
+  faceset: monsters[randomMonster].faceset,
   img: {
-    src: monsters.Reptile.img.src,
+    src: monsters[randomMonster].img.src,
   },
   frames: {
     max: 4,
     hold: 30,
   },
   lvl: 1,
-  type: monsters.Reptile.type,
+  type: monsters[randomMonster].type,
   animate: true,
-  name: monsters.Reptile.name,
+  name: monsters[randomMonster].name,
   select: true,
-  attacks: [...monsters.Reptile.attacks, attacks.Caught],
+  attacks: [...monsters[randomMonster].attacks, attacks.Caught],
 });
 
 let tab = [playerMonster];

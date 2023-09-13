@@ -1,5 +1,5 @@
-const monsters = {
-  Cyclope: {
+const monsters = [
+  {
     position: {
       x: 0,
       y: 0,
@@ -18,7 +18,7 @@ const monsters = {
     name: "Cyclope",
     attacks: [attacks.Tackle, attacks.Fireball],
   },
-  Dragon: {
+  {
     position: {
       x: 0,
       y: 0,
@@ -37,7 +37,7 @@ const monsters = {
     name: "Dragon",
     attacks: [attacks.Tackle, attacks.Fireball],
   },
-  Axolot: {
+  {
     position: {
       x: 0,
       y: 0,
@@ -56,7 +56,7 @@ const monsters = {
     name: "Axolot",
     attacks: [attacks.Tackle, attacks.Fireball],
   },
-  Butterfly: {
+  {
     position: {
       x: 0,
       y: 0,
@@ -75,7 +75,7 @@ const monsters = {
     name: "Butterfly",
     attacks: [attacks.Tackle, attacks.Fireball],
   },
-  Flam: {
+  {
     position: {
       x: 0,
       y: 0,
@@ -94,7 +94,7 @@ const monsters = {
     name: "Flam",
     attacks: [attacks.Tackle, attacks.Fireball],
   },
-  GoldRacoon: {
+  {
     position: {
       x: 0,
       y: 0,
@@ -113,7 +113,7 @@ const monsters = {
     name: "GoldRacoon",
     attacks: [attacks.Tackle, attacks.Fireball],
   },
-  Racoon: {
+  {
     position: {
       x: 0,
       y: 0,
@@ -132,7 +132,7 @@ const monsters = {
     name: "Racoon",
     attacks: [attacks.Tackle, attacks.Fireball],
   },
-  Reptile: {
+  {
     position: {
       x: 0,
       y: 0,
@@ -151,7 +151,7 @@ const monsters = {
     name: "Reptile",
     attacks: [attacks.Tackle, attacks.Fireball],
   },
-  Slime: {
+  {
     position: {
       x: 0,
       y: 0,
@@ -170,7 +170,7 @@ const monsters = {
     name: "Dragon",
     attacks: [attacks.Tackle, attacks.Fireball],
   },
-  Snake: {
+  {
     position: {
       x: 0,
       y: 0,
@@ -189,4 +189,4 @@ const monsters = {
     name: "Snake",
     attacks: [attacks.Tackle, attacks.Fireball],
   },
-};
+];
