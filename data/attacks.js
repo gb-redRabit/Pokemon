@@ -1,4 +1,11 @@
 const attacks = {
+  Caught: {
+    name: "Caught",
+    damage: 0,
+    type: "Normal",
+    color: "black",
+  },
+
   Tackle: {
     name: "Tackle",
     damage: 10,

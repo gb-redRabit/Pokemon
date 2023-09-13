@@ -31,9 +31,42 @@
     button:hover {
       background-color: #dfdfdf;
     }
+    .active {
+      color: red;
+    }
   </style>
   <body>
     <div style="position: relative; display: inline-block">
+      <button
+        id="bag"
+        style="
+          background-color: white;
+          position: absolute;
+          text-align: center;
+          width: 100px;
+          top: 20px;
+          left: 20px;
+          border: 4px solid rgb(0, 0, 0);
+          padding: 12px;
+        "
+      >
+        Bag
+      </button>
+      <div
+        id="list"
+        style="
+          background-color: white;
+          position: absolute;
+          text-align: center;
+          opacity: 0;
+          width: 500px;
+
+          top: 20px;
+          right: 20px;
+          border: 4px solid rgb(0, 0, 0);
+          padding: 12px;
+        "
+      ></div>
       <div
         id="overlappingDiv"
         style="
@@ -218,11 +251,13 @@
     <script src="data/audio.js"></script>
     <script src="data/attacks.js"></script>
     <script src="data/monsters.js"></script>
-    <script src="data/monstersEnemy.js"></script>
     <script src="data/startPlayer.js"></script>
     <script src="data/battleZones.js"></script>
-    <script src="classes.js"></script>
+    <script src="js/classes/Attack.js"></script>
+    <script src="js/classes/Boundary.js"></script>
+    <script src="js/classes/Sprite.js"></script>
+    <script src="js/classes/Monster.js"></script>
     <script src="index.js"></script>
-    <script src="battleScene.js"></script>
+    <script src="js/battleScene.js"></script>
   </body>
 </html>

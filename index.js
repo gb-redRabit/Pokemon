@@ -1,30 +1,99 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let enemyMonster, playerMonster, battleAnimationId, renderedSprites, queue;
-playerMonster = new Monster(monsters.Draggle);
-
 canvas.width = 1024;
 canvas.height = 576;
-
-//70 szerokośc mapy(kafle) z edytora
-const collisionsMap = [];
-for (let i = 0; i < collisions.length; i += 70) {
-  collisionsMap.push(collisions.slice(i, i + 70));
-}
-
-const battleZonesMap = [];
-for (let i = 0; i < battleZonesData.length; i += 70) {
-  battleZonesMap.push(battleZonesData.slice(i, 70 + i));
-}
-const startMap = [];
-for (let i = 0; i < startPlayer.length; i += 70) {
-  startMap.push(startPlayer.slice(i, 70 + i));
-}
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+let activeMonsterPlayer;
+let flaga = false;
+let lastKey = "";
 const boundaries = [];
 const battleZones = [];
 const startPlayerZone = [];
 const offset = { x: -548, y: -795 };
+const collisionsMap = [];
+const battleZonesMap = [];
+const startMap = [];
+const image = new Image();
+image.src = "./img/background/map.png";
+
+const imageForeground = new Image();
+imageForeground.src = "./img/background/foreground.png";
+
+const playerDownImage = new Image();
+playerDownImage.src = "./img/playerDown.png";
+
+const playerUpImage = new Image();
+playerUpImage.src = "./img/playerUp.png";
+
+const playerLeftImage = new Image();
+playerLeftImage.src = "./img/playerLeft.png";
+
+const playerRightImage = new Image();
+playerRightImage.src = "./img/playerRight.png";
+
+let enemyMonster, playerMonster, battleAnimationId, renderedSprites, queue;
+playerMonster = new Monster({
+  position: {
+    x: 0,
+    y: 0,
+  },
+  img: {
+    src: monsters.Draggle.img.src,
+  },
+  frames: {
+    max: 4,
+    hold: 30,
+  },
+  lvl: 1,
+  animate: true,
+  name: monsters.Draggle.name,
+  select: true,
+  attacks: [...monsters.Draggle.attacks, attacks.Caught],
+});
+
+let tab = [playerMonster];
+activeMonsterPlayer = tab[0];
+
+for (let i = 0; i < collisions.length; i += 70) {
+  collisionsMap.push(collisions.slice(i, i + 70));
+}
+
+for (let i = 0; i < battleZonesData.length; i += 70) {
+  battleZonesMap.push(battleZonesData.slice(i, 70 + i));
+}
+
+for (let i = 0; i < startPlayer.length; i += 70) {
+  startMap.push(startPlayer.slice(i, 70 + i));
+}
+
+const background = new Sprite({
+  position: { x: offset.x, y: offset.y },
+  img: image,
+});
+
+const foreground = new Sprite({
+  position: { x: offset.x, y: offset.y },
+  img: imageForeground,
+});
+
+const keys = {
+  w: {
+    pressed: false,
+  },
+  s: {
+    pressed: false,
+  },
+  a: {
+    pressed: false,
+  },
+  d: {
+    pressed: false,
+  },
+};
+const battle = {
+  initiated: false,
+};
 
 collisionsMap.forEach((row, i) => {
   row.forEach((item, j) => {
@@ -68,26 +137,7 @@ startMap.forEach((row, i) => {
   });
 });
 
-ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-const image = new Image();
-image.src = "./img/map.png";
-
-const imageForeground = new Image();
-imageForeground.src = "./img/foreground.png";
-
-const playerDownImage = new Image();
-playerDownImage.src = "./img/playerDown.png";
-
-const playerUpImage = new Image();
-playerUpImage.src = "./img/playerUp.png";
-
-const playerLeftImage = new Image();
-playerLeftImage.src = "./img/playerLeft.png";
-
-const playerRightImage = new Image();
-playerRightImage.src = "./img/playerRight.png";
-
+const movables = [background, ...boundaries, foreground, ...battleZones];
 const player = new Sprite({
   position: {
     x: startPlayerZone[0].position.x,
@@ -102,36 +152,6 @@ const player = new Sprite({
     down: playerDownImage,
   },
 });
-
-const background = new Sprite({
-  position: { x: offset.x, y: offset.y },
-  img: image,
-});
-
-const foreground = new Sprite({
-  position: { x: offset.x, y: offset.y },
-  img: imageForeground,
-});
-
-const keys = {
-  w: {
-    pressed: false,
-  },
-  s: {
-    pressed: false,
-  },
-  a: {
-    pressed: false,
-  },
-  d: {
-    pressed: false,
-  },
-};
-const battle = {
-  initiated: false,
-};
-
-const movables = [background, ...boundaries, foreground, ...battleZones];
 
 const rectangularCollision = ({ rectangle1, rectangle2 }) => {
   return (
@@ -190,6 +210,10 @@ const animate = () => {
         audio.battle.play();
 
         battle.initiated = true;
+        gsap.to("#list", {
+          opacity: 0,
+        });
+        flaga = false;
         gsap.to("#overlappingDiv", {
           opacity: 1,
           repeat: 3,
@@ -210,7 +234,6 @@ const animate = () => {
             });
           },
         });
-        console.log("batell");
         break;
       }
     }
@@ -297,7 +320,45 @@ const animate = () => {
 };
 
 // animate();
-let lastKey = "";
+
+document.querySelector("#bag").addEventListener("click", () => {
+  if (!flaga) {
+    gsap.to("#list", {
+      opacity: 1,
+    });
+    flaga = !flaga;
+  } else {
+    gsap.to("#list", {
+      opacity: 0,
+    });
+    flaga = !flaga;
+  }
+
+  document.getElementById("list").innerHTML = "";
+
+  tab.forEach((item) => {
+    const div = document.createElement("div");
+    div.addEventListener("click", (e) => {
+      tab.forEach((sel) => {
+        sel.select = false;
+      });
+      item.select = true;
+      activeMonsterPlayer = item;
+      activeClick();
+      div.classList.add("active");
+    });
+    item.select ? div.classList.add("active") : "";
+    div.innerHTML = `${item.name} - ${item.lvl} lvl `;
+    document.getElementById("list").append(div);
+  });
+});
+
+function activeClick() {
+  let non = document.querySelectorAll("#list div");
+  non.forEach((item) => {
+    item.classList.remove("active");
+  });
+}
 
 window.addEventListener("keydown", (e) => {
   switch (e.key) {

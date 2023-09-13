@@ -1,64 +1,3 @@
-class Sprite {
-  constructor({
-    position,
-    img,
-    frames = { max: 1, hold: 10 },
-    sprites,
-    animate = false,
-    rotation = 0,
-  }) {
-    this.position = position;
-    this.img = new Image();
-    this.frames = { ...frames, val: 0, elapsed: 0 };
-    this.img.onload = () => {
-      this.width = this.img.width / this.frames.max;
-      this.height = this.img.height;
-    };
-    this.img.src = img.src;
-    this.animate = animate;
-    this.sprites = sprites;
-    this.opacity = 1;
-
-    this.rotation = rotation;
-  }
-  draw() {
-    ctx.save();
-    ctx.globalAlpha = this.opacity;
-    ctx.translate(
-      this.position.x + this.width / 2,
-      this.position.y + this.height / 2
-    );
-    ctx.rotate(this.rotation);
-    ctx.translate(
-      -this.position.x - this.width / 2,
-      -this.position.y - this.height / 2
-    );
-
-    ctx.drawImage(
-      this.img,
-      this.frames.val * this.width,
-      0,
-      this.img.width / this.frames.max,
-      this.img.height,
-      this.position.x,
-      this.position.y,
-      this.img.width / this.frames.max,
-      this.img.height
-    );
-    ctx.restore();
-    if (!this.animate) return;
-
-    if (this.frames.max > 1) {
-      this.frames.elapsed++;
-    }
-
-    if (this.frames.elapsed % this.frames.hold === 0) {
-      if (this.frames.val < this.frames.max - 1) this.frames.val++;
-      else this.frames.val = 0;
-    }
-  }
-}
-
 class Monster extends Sprite {
   constructor({
     position,
@@ -72,6 +11,7 @@ class Monster extends Sprite {
     name,
     attacks,
     lvl,
+    select = false,
   }) {
     super({
       position,
@@ -82,10 +22,11 @@ class Monster extends Sprite {
       animate,
       rotation,
     });
+    this.select = select;
     this.lvl = lvl;
     this.nextLvl = this.nextLvl ? this.nextLvl : 0;
     this.nextLvl = this.nextLvl + this.lvl * 10;
-    this.exp = 0;
+    this.exp = 3;
     this.giveExp = Math.floor((this.lvl * 10 + 9) / 6);
     this.capturedExp = this.lvl * 5;
     this.health = this.health ? this.health : this.lvl * 2;
@@ -153,12 +94,12 @@ class Monster extends Sprite {
   }
   levelUp({ recipient, sender }) {
     sender.exp += recipient.giveExp;
-
+    // power UP monster player
     if (sender.capturedExp <= sender.exp) {
       let up = sender.exp - sender.capturedExp;
-      sender.health += Math.floor(Math.random() * 20);
+      sender.health += Math.floor(Math.random() * 20 + 10);
+      sender.healthMax = sender.health;
       sender.lvl++;
-
       document.querySelector(
         "#dialogueBox"
       ).innerText = `LeveL Up ${sender.lvl}`;
@@ -168,9 +109,9 @@ class Monster extends Sprite {
     }
   }
   hit(healtBar, healtText, { recipient }) {
-    document.querySelector(
-      healtText
-    ).innerText = `${recipient.health}/${recipient.healthMax}`;
+    document.querySelector(healtText).innerText = `${
+      recipient.health > 0 ? recipient.health : 0
+    }/${recipient.healthMax}`;
     gsap.to(healtBar, {
       width: `${(recipient.health * 100) / recipient.healthMax}%`,
     });
@@ -200,6 +141,12 @@ class Monster extends Sprite {
     audio.victory.play();
   }
 
+  miss() {
+    let dodge = true;
+    //napisać zasady obrony
+
+    return dodge;
+  }
   attack({ attack, recipient, renderedSprites }) {
     document.querySelector("#dialogueBox").style.display = "flex";
     document.querySelector(
@@ -210,87 +157,40 @@ class Monster extends Sprite {
     let healtBar = "#enemyHealtBar";
     let healtText = "#enemyHp";
     let rotation = 1;
-
+    const attackaaa = new Attack();
     if (this.isEnemy) {
       movemenDistance = -20;
       healtBar = "#playerHealthBar";
       healtText = "#playerHp";
       rotation = -2.2;
     }
-    recipient.health -= attack.damage;
-    switch (attack.name) {
-      case "Tackle":
-        this.tackle(movemenDistance, healtBar, healtText, { recipient });
-        break;
-      case "Fireball":
-        this.fireball(healtBar, rotation, healtText, {
-          recipient,
-          renderedSprites,
-        });
-        break;
-    }
-  }
-
-  fireball(healtBar, rotation, healtText, { recipient, renderedSprites }) {
-    audio.initFireball.play();
-    const fireBallImage = new Image();
-    fireBallImage.src = "./img/fireball.png";
-    const fireBall = new Sprite({
-      position: {
-        x: this.position.x,
-        y: this.position.y,
-      },
-      img: fireBallImage,
-      frames: {
-        max: 4,
-        hold: 10,
-      },
-      animate: true,
-      rotation,
-    });
-    renderedSprites.splice(1, 0, fireBall);
-
-    gsap.to(fireBall.position, {
-      x: recipient.position.x,
-      y: recipient.position.y,
-      onComplete: () => {
-        audio.fireballHit.play();
-        renderedSprites.splice(1, 1);
-        this.hit(healtBar, healtText, { recipient });
-      },
-    });
-  }
-
-  tackle(movemenDistance, healtBar, healtText, { recipient }) {
-    const tl = gsap.timeline();
-
-    tl.to(this.position, {
-      x: this.position.x - movemenDistance,
-    })
-      .to(this.position, {
-        x: this.position.x + movemenDistance * 2,
-        duration: 0.1,
-        onComplete: () => {
-          audio.tackleHit.play();
-          this.hit(healtBar, healtText, { recipient });
-        },
-      })
-      .to(this.position, {
-        x: this.position.x,
+    if (this.miss()) {
+      recipient.health -= attack.damage;
+      switch (attack.name) {
+        case "Tackle":
+          attackaaa.tackle(movemenDistance, healtBar, healtText, { recipient });
+          break;
+        case "Caught":
+          attackaaa.fireball(healtBar, rotation, healtText, {
+            recipient,
+            renderedSprites,
+          });
+          break;
+        case "Fireball":
+          attackaaa.fireball(healtBar, rotation, healtText, {
+            recipient,
+            renderedSprites,
+          });
+          break;
+      }
+    } else {
+      //dzwiek obrony dodac zmienić animacje
+      gsap.to(recipient, {
+        opacity: 0,
+        repeat: 5,
+        yoyo: true,
+        duration: 0.05,
       });
-  }
-}
-
-class Boundary {
-  static width = 48;
-  static height = 48;
-  constructor({ position }) {
-    this.position = position;
-    this.width = 48;
-    this.height = 48;
-  }
-  draw() {
-    ctx.fillStyle = "rgba(255,0,0,0)";
-    ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+    }
   }
 }

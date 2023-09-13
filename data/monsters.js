@@ -5,7 +5,7 @@ const monsters = {
       y: 0,
     },
     img: {
-      src: "./img/eya.png",
+      src: "./img/monster/eya.png",
     },
     frames: {
       max: 4,
@@ -23,7 +23,7 @@ const monsters = {
     },
 
     img: {
-      src: "./img/SpriteSheet.png",
+      src: "./img/monster/SpriteSheet.png",
     },
     lvl: 1,
     frames: {
