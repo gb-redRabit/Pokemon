@@ -7,7 +7,7 @@
       href="https://fonts.googleapis.com/css?family=Press+Start+2P:regular"
       rel="stylesheet"
     />
-    <title>Document</title>
+    <title>Portemon</title>
   </head>
   <style>
     * {
@@ -23,6 +23,53 @@
       justify-content: center;
       align-items: center;
     }
+    .overlappingDiv {
+      background-color: rgb(0, 0, 0);
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .healtBar {
+      background-color: rgb(19, 126, 5);
+      top: 0;
+      width: 100%;
+      height: 5px;
+      position: absolute;
+    }
+    .healOver {
+      background-color: rgb(201, 201, 201);
+      margin-top: 10px;
+      height: 5px;
+    }
+    .userInterface {
+      display: none;
+    }
+    .monsterDescription {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .monsterDescription div {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-size: 20px;
+      gap: 20px;
+    }
+    .monsterDescription + div {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      font-size: 15px;
+      gap: 10px;
+    }
+    .monsterDescription img {
+      height: 150px;
+      width: 150px;
+    }
     button {
       border: 0;
       font-size: 20px;
@@ -32,7 +79,19 @@
       background-color: #dfdfdf;
     }
     .active {
-      color: red;
+      border: 4px solid black;
+    }
+    .monster img {
+      padding-right: 10px;
+    }
+    .monster {
+      display: flex;
+      /* justify-content: space-between; */
+      font-size: 16px;
+      align-items: center;
+    }
+    h1 {
+      font-size: 16px;
     }
   </style>
   <body>
@@ -57,31 +116,39 @@
         style="
           background-color: white;
           position: absolute;
-          text-align: center;
           opacity: 0;
-          width: 500px;
-
+          width: 340px;
+          height: 540px;
           top: 20px;
           right: 20px;
           border: 4px solid rgb(0, 0, 0);
           padding: 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
         "
       ></div>
       <div
-        id="overlappingDiv"
+        id="description"
         style="
-          background-color: rgb(0, 0, 0);
+          background-color: white;
           position: absolute;
-          width: 100%;
-          height: 100%;
           opacity: 0;
-          pointer-events: none;
-          z-index: 10;
+          width: 505px;
+          height: 540px;
+          top: 20px;
+          right: 380px;
+          border: 4px solid rgb(0, 0, 0);
+          padding: 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
         "
       ></div>
+      <div id="overlappingDiv" class="overlappingDiv"></div>
 
       <canvas id="canvas"></canvas>
-      <div id="userInterface" style="display: none">
+      <div class="userInterface" style="display: none">
         <div
           style="
             background-color: white;
@@ -100,28 +167,13 @@
               margin-bottom: 10px;
             "
           >
-            <h1 id="enemyName" style="font-size: 16px"></h1>
-            <h1 id="enemyHp" style="font-size: 16px"></h1>
+            <h1 id="enemyName"></h1>
+            <h1 id="enemyHp"></h1>
           </div>
-          <h1 style="font-size: 16px">LvL: <span id="enemyLvl">1</span></h1>
+          <h1>LvL: <span id="enemyLvl">1</span></h1>
           <div style="position: relative">
-            <div
-              style="
-                background-color: rgb(201, 201, 201);
-                margin-top: 10px;
-                height: 5px;
-              "
-            ></div>
-            <div
-              id="enemyHealtBar"
-              style="
-                background-color: rgb(19, 126, 5);
-                top: 0;
-                width: 100%;
-                height: 5px;
-                position: absolute;
-              "
-            ></div>
+            <div class="healOver"></div>
+            <div id="enemyHealtBar" class="healtBar"></div>
           </div>
         </div>
 
@@ -143,37 +195,16 @@
               margin-bottom: 10px;
             "
           >
-            <h1 id="playerName" style="font-size: 16px"></h1>
-            <h1 id="playerHp" style="font-size: 16px"></h1>
+            <h1 id="playerName"></h1>
+            <h1 id="playerHp"></h1>
           </div>
-          <h1 style="font-size: 16px">LvL: <span id="playerLvl"></span></h1>
+          <h1>LvL: <span id="playerLvl"></span></h1>
           <div style="position: relative">
-            <div
-              style="
-                background-color: rgb(201, 201, 201);
-                margin-top: 10px;
-                height: 5px;
-              "
-            ></div>
-            <div
-              id="playerHealthBar"
-              style="
-                background-color: rgb(19, 126, 5);
-                top: 0;
-                width: 100%;
-                height: 5px;
-                position: absolute;
-              "
-            ></div>
+            <div class="healOver"></div>
+            <div id="playerHealthBar" class="healtBar"></div>
           </div>
           <div style="position: relative">
-            <div
-              style="
-                background-color: rgb(201, 201, 201);
-                margin-top: 10px;
-                height: 5px;
-              "
-            ></div>
+            <div class="healOver"></div>
             <div
               id="playerExpBar"
               style="

@@ -7,7 +7,7 @@ const battelBackground = new Sprite({
 });
 
 const initBattle = () => {
-  document.querySelector("#userInterface").style.display = "block";
+  document.querySelector(".userInterface").style.display = "block";
   document.querySelector("#dialogueBox").style.display = "none";
 
   document.querySelector("#enemyHealtBar").style.width = "100%";
@@ -19,17 +19,19 @@ const initBattle = () => {
       x: 0,
       y: 0,
     },
+    faceset: monsters.Cyclope.faceset,
     img: {
-      src: monsters.Emby.img.src,
+      src: monsters.Cyclope.img.src,
     },
     frames: {
       max: 4,
       hold: 30,
     },
     lvl: 1,
+    type: monsters.Cyclope.type,
     animate: true,
-    name: monsters.Emby.name,
-    attacks: monsters.Emby.attacks,
+    name: monsters.Cyclope.name,
+    attacks: monsters.Cyclope.attacks,
   });
   renderedSprites = [enemyMonster, activeMonsterPlayer];
   queue = [];
@@ -45,6 +47,7 @@ const initBattle = () => {
 
   activeMonsterPlayer.position.x = 300;
   activeMonsterPlayer.position.y = 340;
+  activeMonsterPlayer.opacity = 1;
   enemyMonster.position.x = 810;
   enemyMonster.position.y = 120;
   enemyMonster.isEnemy = true;
@@ -71,7 +74,7 @@ const initBattle = () => {
       document.getElementById("attacksBox").append(button);
       button.addEventListener("click", (e) => {
         const selectedAttack = attacks[e.currentTarget.innerText];
-        console.log(tab);
+
         activeMonsterPlayer.attack({
           attack: selectedAttack,
           recipient: enemyMonster,
@@ -88,7 +91,7 @@ const initBattle = () => {
             onComplete: () => {
               cancelAnimationFrame(battleAnimationId);
               animate();
-              document.querySelector("#userInterface").style.display = "none";
+              document.querySelector(".userInterface").style.display = "none";
               gsap.to("#overlappingDiv", {
                 opacity: 0,
               });
@@ -98,6 +101,7 @@ const initBattle = () => {
                   x: 0,
                   y: 0,
                 },
+                faceset: enemyMonster.faceset,
                 img: {
                   src: enemyMonster.img.src,
                 },
@@ -105,14 +109,14 @@ const initBattle = () => {
                   max: 4,
                   hold: 30,
                 },
-                lvl: 1,
+                lvl: enemyMonster.lvl,
+                type: enemyMonster.type,
+                sEnemy: false,
                 animate: true,
                 name: enemyMonster.name,
-                attacks: enemyMonster.attacks,
+                attacks: [...enemyMonster.attacks, attacks.Caught],
               });
-              newMonster.isEnemy = false;
-              newMonster.attacks.push(attacks.Caught);
-              tab.push(new Monster(newMonster));
+              tab.push(newMonster);
               audio.Map.play();
             },
           });
@@ -120,6 +124,7 @@ const initBattle = () => {
       });
     }
   });
+  // dodać innyu sposób łapania
   queue.push(() => {
     activeMonsterPlayer.attacks.forEach((attack) => {
       const button = document.createElement("button");
@@ -145,7 +150,7 @@ const initBattle = () => {
             onComplete: () => {
               cancelAnimationFrame(battleAnimationId);
               animate();
-              document.querySelector("#userInterface").style.display = "none";
+              document.querySelector(".userInterface").style.display = "none";
               gsap.to("#overlappingDiv", {
                 opacity: 0,
               });
@@ -155,6 +160,7 @@ const initBattle = () => {
                   x: 0,
                   y: 0,
                 },
+                faceset: enemyMonster.faceset,
                 img: {
                   src: enemyMonster.img.src,
                 },
@@ -162,14 +168,14 @@ const initBattle = () => {
                   max: 4,
                   hold: 30,
                 },
-                lvl: 1,
+                lvl: enemyMonster.lvl,
+                type: enemyMonster.type,
+                sEnemy: false,
                 animate: true,
                 name: enemyMonster.name,
-                attacks: enemyMonster.attacks,
+                attacks: [...enemyMonster.attacks, attacks.Caught],
               });
-              newMonster.isEnemy = false;
-              newMonster.attacks.push(attacks.Caught);
-              tab.push(new Monster(newMonster));
+              tab.push(newMonster);
               audio.Map.play();
             },
           });
@@ -205,7 +211,7 @@ const initBattle = () => {
             onComplete: () => {
               cancelAnimationFrame(battleAnimationId);
               animate();
-              document.querySelector("#userInterface").style.display = "none";
+              document.querySelector(".userInterface").style.display = "none";
               gsap.to("#overlappingDiv", {
                 opacity: 0,
               });
@@ -236,7 +242,7 @@ const initBattle = () => {
               onComplete: () => {
                 cancelAnimationFrame(battleAnimationId);
                 animate();
-                document.querySelector("#userInterface").style.display = "none";
+                document.querySelector(".userInterface").style.display = "none";
                 gsap.to("#overlappingDiv", {
                   opacity: 0,
                 });
@@ -250,7 +256,7 @@ const initBattle = () => {
     });
 
     item.addEventListener("mouseenter", (e) => {
-      if (e.currentTarget.id !== "bag") {
+      if (e.currentTarget.id !== "bag" || e.currentTarget.id !== "list") {
         const selectedAttack = attacks[e.currentTarget.innerText];
         document.getElementById("attackType").innerText = selectedAttack.type;
         document.getElementById("attackType").style.color =
@@ -267,8 +273,8 @@ const animateBattel = () => {
     sprite.draw();
   });
 };
-initBattle();
-animateBattel();
+// initBattle();
+// animateBattel();
 document.querySelector("#dialogueBox").addEventListener("click", (e) => {
   if (queue.length > 0) {
     queue[0]();

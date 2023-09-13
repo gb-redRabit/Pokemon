@@ -1,6 +1,6 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-
+console.log(monsters);
 canvas.width = 1024;
 canvas.height = 576;
 ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -38,18 +38,20 @@ playerMonster = new Monster({
     x: 0,
     y: 0,
   },
+  faceset: monsters.Reptile.faceset,
   img: {
-    src: monsters.Draggle.img.src,
+    src: monsters.Reptile.img.src,
   },
   frames: {
     max: 4,
     hold: 30,
   },
   lvl: 1,
+  type: monsters.Reptile.type,
   animate: true,
-  name: monsters.Draggle.name,
+  name: monsters.Reptile.name,
   select: true,
-  attacks: [...monsters.Draggle.attacks, attacks.Caught],
+  attacks: [...monsters.Reptile.attacks, attacks.Caught],
 });
 
 let tab = [playerMonster];
@@ -319,7 +321,7 @@ const animate = () => {
   }
 };
 
-// animate();
+animate();
 
 document.querySelector("#bag").addEventListener("click", () => {
   if (!flaga) {
@@ -338,24 +340,61 @@ document.querySelector("#bag").addEventListener("click", () => {
 
   tab.forEach((item) => {
     const div = document.createElement("div");
+    div.classList.add("monster");
+    const img = document.createElement("img");
+    img.src = item.faceset;
+    div.append(img);
+
     div.addEventListener("click", (e) => {
       tab.forEach((sel) => {
         sel.select = false;
       });
       item.select = true;
       activeMonsterPlayer = item;
-      activeClick();
+      resetClick();
       div.classList.add("active");
     });
+    div.addEventListener("mouseenter", (e) => {
+      if (flaga) {
+        gsap.to("#description", {
+          opacity: 1,
+        });
+        document.querySelector("#description").innerHTML = "";
+        // dokonać opisu potworów z plecaka
+        const div1 = document.createElement("div");
+        div1.classList.add("monsterDescription");
+        const div2 = document.createElement("div");
+        div2.innerHTML = `<p>${item.name}</p><p>${item.lvl} LVL</p>
+        <p>${item.exp}/${item.capturedExp} EXP</p>
+        <p>Type:${item.type}</p>`;
+        div1.append(img);
+        div1.append(div2);
+        const div3 = document.createElement("div");
+        div3.innerHTML = "<h1>Attacks:</h1>";
+        item.attacks.forEach((at) => {
+          div3.innerHTML += `<p>${
+            at.name !== "Caught"
+              ? `${at.name} dmg: ${at.damage} type: ${at.type}`
+              : ""
+          } </p>`;
+        });
+        document.querySelector("#description").append(div1);
+        document.querySelector("#description").append(div3);
+      }
+    });
+    div.addEventListener("mouseout", (e) => {
+      gsap.to("#description", {
+        opacity: 0,
+      });
+    });
     item.select ? div.classList.add("active") : "";
-    div.innerHTML = `${item.name} - ${item.lvl} lvl `;
+    div.innerHTML += `${item.name} - ${item.lvl} lvl `;
     document.getElementById("list").append(div);
   });
 });
 
-function activeClick() {
-  let non = document.querySelectorAll("#list div");
-  non.forEach((item) => {
+function resetClick() {
+  document.querySelectorAll(".monster").forEach((item) => {
     item.classList.remove("active");
   });
 }

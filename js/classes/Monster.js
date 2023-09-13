@@ -3,6 +3,7 @@ class Monster extends Sprite {
     position,
     velocity,
     img,
+    faceset,
     frames = { max: 1, hold: 10 },
     sprites,
     animate = false,
@@ -12,6 +13,7 @@ class Monster extends Sprite {
     attacks,
     lvl,
     select = false,
+    type,
   }) {
     super({
       position,
@@ -22,10 +24,12 @@ class Monster extends Sprite {
       animate,
       rotation,
     });
+    this.type = type;
+    this.faceset = faceset;
     this.select = select;
     this.lvl = lvl;
-    this.nextLvl = this.nextLvl ? this.nextLvl : 0;
-    this.nextLvl = this.nextLvl + this.lvl * 10;
+    // this.nextLvl = this.nextLvl ? this.nextLvl : 0;
+    // this.nextLvl = this.nextLvl + this.lvl * 10;
     this.exp = 3;
     this.giveExp = Math.floor((this.lvl * 10 + 9) / 6);
     this.capturedExp = this.lvl * 5;
@@ -92,6 +96,7 @@ class Monster extends Sprite {
       else this.frames.val = 0;
     }
   }
+
   levelUp({ recipient, sender }) {
     sender.exp += recipient.giveExp;
     // power UP monster player
@@ -100,6 +105,8 @@ class Monster extends Sprite {
       sender.health += Math.floor(Math.random() * 20 + 10);
       sender.healthMax = sender.health;
       sender.lvl++;
+      sender.capturedExp = sender.lvl * 5;
+      sender.exp = 0;
       document.querySelector(
         "#dialogueBox"
       ).innerText = `LeveL Up ${sender.lvl}`;
@@ -108,6 +115,7 @@ class Monster extends Sprite {
       }
     }
   }
+
   hit(healtBar, healtText, { recipient }) {
     document.querySelector(healtText).innerText = `${
       recipient.health > 0 ? recipient.health : 0
@@ -151,7 +159,7 @@ class Monster extends Sprite {
     document.querySelector("#dialogueBox").style.display = "flex";
     document.querySelector(
       "#dialogueBox"
-    ).innerHTML = `${this.name} used ${attack.name}`;
+    ).innerHTML = `${recipient.name} used ${attack.name}`;
 
     let movemenDistance = 20;
     let healtBar = "#enemyHealtBar";
