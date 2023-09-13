@@ -28,9 +28,7 @@ class Monster extends Sprite {
     this.faceset = faceset;
     this.select = select;
     this.lvl = lvl;
-    // this.nextLvl = this.nextLvl ? this.nextLvl : 0;
-    // this.nextLvl = this.nextLvl + this.lvl * 10;
-    this.exp = 3;
+    this.exp = 0;
     this.giveExp = Math.floor((this.lvl * 10 + 9) / 6);
     this.capturedExp = this.lvl * 5;
     this.health = this.health ? this.health : this.lvl * 2;
@@ -99,7 +97,6 @@ class Monster extends Sprite {
 
   levelUp({ recipient, sender }) {
     sender.exp += recipient.giveExp;
-    // power UP monster player
     if (sender.capturedExp <= sender.exp) {
       let up = sender.exp - sender.capturedExp;
       sender.health += Math.floor(Math.random() * 20 + 10);
@@ -121,7 +118,11 @@ class Monster extends Sprite {
       recipient.health > 0 ? recipient.health : 0
     }/${recipient.healthMax}`;
     gsap.to(healtBar, {
-      width: `${(recipient.health * 100) / recipient.healthMax}%`,
+      width: `${
+        recipient.health > 0
+          ? (recipient.health * 100) / recipient.healthMax
+          : 0
+      }%`,
     });
     gsap.to(recipient.position, {
       x: recipient.position.x + 10,

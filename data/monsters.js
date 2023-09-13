@@ -167,7 +167,7 @@ const monsters = [
     },
     type: "Normal",
     animate: true,
-    name: "Dragon",
+    name: "Slime",
     attacks: [attacks.Tackle, attacks.Fireball],
   },
   {

@@ -28,7 +28,7 @@ const initBattle = () => {
       max: 4,
       hold: 30,
     },
-    lvl: 1,
+    lvl: Math.floor(Math.random() * 3 + activeMonsterPlayer.lvl),
     type: monsters[randomMonster].type,
     animate: true,
     name: monsters[randomMonster].name,
@@ -38,7 +38,6 @@ const initBattle = () => {
   queue = [];
 
   activeMonsterPlayer.health = activeMonsterPlayer.healthMax;
-  enemyMonster.lvl = Math.floor(Math.random() * 3 + 1);
 
   document.querySelector("#enemyName").innerText = enemyMonster.name;
   document.querySelector("#enemyLvl").innerText = enemyMonster.lvl;
@@ -85,6 +84,9 @@ const initBattle = () => {
           document.querySelector(
             "#dialogueBox"
           ).innerText = `Player Caught ${enemyMonster.name}`;
+        });
+        queue.push(() => {
+          enemyMonster.faint();
         });
         queue.push(() => {
           gsap.to("#overlappingDiv", {
@@ -144,6 +146,9 @@ const initBattle = () => {
           document.querySelector(
             "#dialogueBox"
           ).innerText = `Player Caught ${enemyMonster.name}`;
+        });
+        queue.push(() => {
+          enemyMonster.faint();
         });
         queue.push(() => {
           gsap.to("#overlappingDiv", {
