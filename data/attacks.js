@@ -36,7 +36,7 @@ const attacks = {
     color: "black",
   },
   Fireball: {
-    name: "FireBall",
+    name: "Fireball",
     damage: 10,
     type: "Fire",
     color: "red",
