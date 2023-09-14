@@ -166,15 +166,16 @@ class Monster extends Sprite {
     audio.battle.stop();
     audio.victory.play();
   }
+
   miss() {
     let dodge = true;
     //napisać zasady obrony
 
     return dodge;
   }
+
   attacktype({ attack, recipient }) {
     let dmg;
-
     if (recipient.type === attack.type || recipient.type !== attack.type)
       dmg = attack.damage;
     if (recipient.type === "Normal" && attack.type !== "Normal")
@@ -191,9 +192,9 @@ class Monster extends Sprite {
       dmg = attack.damage - this.dmg * 2;
     if (recipient.type === "Fire" && attack.type === "Water")
       dmg = attack.damage + this.dmg * 2;
-    console.log(dmg);
     return dmg * this.lvl;
   }
+
   attack({ attack, recipient, sender, renderedSprites }) {
     document.querySelector("#dialogueBox").style.display = "flex";
     document.querySelector(

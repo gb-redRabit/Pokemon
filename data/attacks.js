@@ -6,7 +6,7 @@ const attacks = {
     color: "black",
   },
   PlantSpike: {
-    name: "Plant Spike",
+    name: "PlantSpike",
     damage: 5,
     type: "Grass",
     color: "green",
@@ -24,7 +24,7 @@ const attacks = {
     color: "black",
   },
   FastAttack: {
-    name: "Fast Attack",
+    name: "FastAttack",
     damage: 8,
     type: "Normal",
     color: "black",
@@ -36,19 +36,19 @@ const attacks = {
     color: "black",
   },
   Fireball: {
-    name: "Fire Ball",
+    name: "FireBall",
     damage: 10,
     type: "Fire",
     color: "red",
   },
   SheetRock: {
-    name: "Sheet Rock",
+    name: "SheetRock",
     damage: 10,
     type: "Ground",
     color: "saddlebrown",
   },
   FrozenBall: {
-    name: "Frozen Ball",
+    name: "FrozenBall",
     damage: 15,
     type: "Water",
     color: "Blue",

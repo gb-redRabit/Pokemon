@@ -36,8 +36,8 @@ let enemyMonster, playerMonster, battleAnimationId, renderedSprites, queue;
 const randomMonster = Math.floor(Math.random() * monsters.length);
 playerMonster = new Monster({
   position: {
-    x: 0,
-    y: 0,
+    x: 300,
+    y: 340,
   },
   faceset: monsters[randomMonster].faceset,
   img: {

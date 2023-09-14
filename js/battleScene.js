@@ -17,8 +17,8 @@ const initBattle = () => {
 
   enemyMonster = new Monster({
     position: {
-      x: 0,
-      y: 0,
+      x: 810,
+      y: 120,
     },
     faceset: monsters[randomMonster].faceset,
     img: {
@@ -31,6 +31,7 @@ const initBattle = () => {
     lvl: Math.floor(Math.random() * 3 + activeMonsterPlayer.lvl),
     type: monsters[randomMonster].type,
     animate: true,
+    isEnemy: true,
     name: monsters[randomMonster].name,
     attacks: monsters[randomMonster].attacks,
   });
@@ -45,12 +46,7 @@ const initBattle = () => {
   document.querySelector("#playerName").innerText = activeMonsterPlayer.name;
   document.querySelector("#playerLvl").innerText = activeMonsterPlayer.lvl;
 
-  activeMonsterPlayer.position.x = 300;
-  activeMonsterPlayer.position.y = 340;
   activeMonsterPlayer.opacity = 1;
-  enemyMonster.position.x = 810;
-  enemyMonster.position.y = 120;
-  enemyMonster.isEnemy = true;
 
   gsap.to("#playerExpBar", {
     width: `${
@@ -73,12 +69,11 @@ const initBattle = () => {
     }
     document.getElementById("attacksBox").append(button);
   });
-  // dodać innyu sposób łapania
 
   document.querySelectorAll("button").forEach((item) => {
     item.addEventListener("click", (e) => {
       const selectedAttack = attacks[e.currentTarget.innerText];
-      console.log(attacks[e.currentTarget.innerText].name);
+
       if (attacks[e.currentTarget.innerText].name !== "Caught")
         activeMonsterPlayer.attack({
           attack: selectedAttack,
