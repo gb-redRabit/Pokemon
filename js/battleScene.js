@@ -68,136 +68,71 @@ const initBattle = () => {
   activeMonsterPlayer.attacks.forEach((attack) => {
     const button = document.createElement("button");
     button.innerHTML = attack.name;
-    if (attack.name !== "Caught") {
-      document.getElementById("attacksBox").append(button);
-    } else if (enemyMonster.health < 10) {
-      document.getElementById("attacksBox").append(button);
-      button.addEventListener("click", (e) => {
-        const selectedAttack = attacks[e.currentTarget.innerText];
-
-        activeMonsterPlayer.attack({
-          attack: selectedAttack,
-          recipient: enemyMonster,
-          renderedSprites,
-        });
-        queue.push(() => {
-          document.querySelector(
-            "#dialogueBox"
-          ).innerText = `Player Caught ${enemyMonster.name}`;
-        });
-        queue.push(() => {
-          enemyMonster.faint();
-        });
-        queue.push(() => {
-          gsap.to("#overlappingDiv", {
-            opacity: 1,
-            onComplete: () => {
-              cancelAnimationFrame(battleAnimationId);
-              animate();
-              document.querySelector(".userInterface").style.display = "none";
-              gsap.to("#overlappingDiv", {
-                opacity: 0,
-              });
-              battle.initiated = false;
-              const newMonster = new Monster({
-                position: {
-                  x: 0,
-                  y: 0,
-                },
-                faceset: enemyMonster.faceset,
-                img: {
-                  src: enemyMonster.img.src,
-                },
-                frames: {
-                  max: 4,
-                  hold: 30,
-                },
-                lvl: enemyMonster.lvl,
-                type: enemyMonster.type,
-                sEnemy: false,
-                animate: true,
-                name: enemyMonster.name,
-                attacks: [...enemyMonster.attacks, attacks.Caught],
-              });
-              tab.push(newMonster);
-              audio.Map.play();
-            },
-          });
-        });
-      });
+    if (attack.name === "Caught") {
+      button.style.display = "none";
     }
+    document.getElementById("attacksBox").append(button);
   });
   // dodać innyu sposób łapania
-  queue.push(() => {
-    activeMonsterPlayer.attacks.forEach((attack) => {
-      const button = document.createElement("button");
-      button.innerHTML = attack.name;
-      if (attack.name === "Caught" && enemyMonster.health < 10)
-        document.getElementById("attacksBox").append(button);
-      button.addEventListener("click", (e) => {
-        const selectedAttack = attacks[e.currentTarget.innerText];
 
-        activeMonsterPlayer.attack({
-          attack: selectedAttack,
-          recipient: enemyMonster,
-          renderedSprites,
-        });
-        queue.push(() => {
-          document.querySelector(
-            "#dialogueBox"
-          ).innerText = `Player Caught ${enemyMonster.name}`;
-        });
-        queue.push(() => {
-          enemyMonster.faint();
-        });
-        queue.push(() => {
-          gsap.to("#overlappingDiv", {
-            opacity: 1,
-            onComplete: () => {
-              cancelAnimationFrame(battleAnimationId);
-              animate();
-              document.querySelector(".userInterface").style.display = "none";
-              gsap.to("#overlappingDiv", {
-                opacity: 0,
-              });
-              battle.initiated = false;
-              const newMonster = new Monster({
-                position: {
-                  x: 0,
-                  y: 0,
-                },
-                faceset: enemyMonster.faceset,
-                img: {
-                  src: enemyMonster.img.src,
-                },
-                frames: {
-                  max: 4,
-                  hold: 30,
-                },
-                lvl: enemyMonster.lvl,
-                type: enemyMonster.type,
-                sEnemy: false,
-                animate: true,
-                name: enemyMonster.name,
-                attacks: [...enemyMonster.attacks, attacks.Caught],
-              });
-              tab.push(newMonster);
-              audio.Map.play();
-            },
-          });
-        });
-      });
-    });
-  });
   document.querySelectorAll("button").forEach((item) => {
     item.addEventListener("click", (e) => {
       const selectedAttack = attacks[e.currentTarget.innerText];
-      activeMonsterPlayer.attack({
-        attack: selectedAttack,
-        recipient: enemyMonster,
-        renderedSprites,
-      });
-
+      console.log(attacks[e.currentTarget.innerText].name);
+      if (attacks[e.currentTarget.innerText].name !== "Caught")
+        activeMonsterPlayer.attack({
+          attack: selectedAttack,
+          recipient: enemyMonster,
+          sender: activeMonsterPlayer,
+          renderedSprites,
+        });
+      if (attacks[e.currentTarget.innerText].name == "Caught") {
+        activeMonsterPlayer.attack({
+          attack: selectedAttack,
+          recipient: enemyMonster,
+          sender: activeMonsterPlayer,
+          renderedSprites,
+        });
+        queue.push(() => {
+          enemyMonster.caught();
+        });
+        queue.push(() => {
+          gsap.to("#overlappingDiv", {
+            opacity: 1,
+            onComplete: () => {
+              cancelAnimationFrame(battleAnimationId);
+              animate();
+              document.querySelector(".userInterface").style.display = "none";
+              gsap.to("#overlappingDiv", {
+                opacity: 0,
+              });
+              battle.initiated = false;
+              const newMonster = new Monster({
+                position: {
+                  x: 0,
+                  y: 0,
+                },
+                faceset: enemyMonster.faceset,
+                img: {
+                  src: enemyMonster.img.src,
+                },
+                frames: {
+                  max: 4,
+                  hold: 30,
+                },
+                lvl: enemyMonster.lvl,
+                type: enemyMonster.type,
+                sEnemy: false,
+                animate: true,
+                name: enemyMonster.name,
+                attacks: [...enemyMonster.attacks, attacks.Caught],
+              });
+              tab.push(newMonster);
+              audio.Map.play();
+            },
+          });
+        });
+      }
       if (enemyMonster.health <= 0) {
         queue.push(() => {
           document.querySelector(
@@ -235,6 +170,7 @@ const initBattle = () => {
         enemyMonster.attack({
           attack: randomAttack,
           recipient: activeMonsterPlayer,
+          sender: enemyMonster,
           renderedSprites,
         });
 
@@ -272,15 +208,24 @@ const initBattle = () => {
   });
 };
 
+const caughtHidden = ({ enemyMonster }) => {
+  let elementsButton = document.querySelectorAll("#attacksBox button");
+  if (
+    enemyMonster.health < enemyMonster.healthMax / 3 ||
+    enemyMonster.health < 10
+  )
+    elementsButton[elementsButton.length - 1].style.display = "block";
+};
 const animateBattel = () => {
   battleAnimationId = window.requestAnimationFrame(animateBattel);
   battelBackground.draw();
+  caughtHidden({ enemyMonster });
   renderedSprites.forEach((sprite) => {
     sprite.draw();
   });
 };
-// initBattle();
-// animateBattel();
+initBattle();
+animateBattel();
 document.querySelector("#dialogueBox").addEventListener("click", (e) => {
   if (queue.length > 0) {
     queue[0]();

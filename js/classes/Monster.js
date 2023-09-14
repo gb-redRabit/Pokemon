@@ -28,12 +28,13 @@ class Monster extends Sprite {
     this.faceset = faceset;
     this.select = select;
     this.lvl = lvl;
+    this.dmg = this.lvl * 2;
     this.exp = 0;
     this.giveExp = Math.floor((this.lvl * 10 + 9) / 6);
     this.capturedExp = this.lvl * 5;
     this.health = this.health ? this.health : this.lvl * 2;
     for (let i = 0; i < this.lvl + 1; i++) {
-      this.health = this.health + Math.floor(Math.random() * 20);
+      this.health = this.health + Math.floor(Math.random() * 10);
     }
     this.healthMax = this.health;
     this.isEnemy = isEnemy;
@@ -99,9 +100,10 @@ class Monster extends Sprite {
     sender.exp += recipient.giveExp;
     if (sender.capturedExp <= sender.exp) {
       let up = sender.exp - sender.capturedExp;
-      sender.health += Math.floor(Math.random() * 20 + 10);
+      sender.health += Math.floor(Math.random() * 20 + 1);
       sender.healthMax = sender.health;
       sender.lvl++;
+      sender.dmg = sender.lvl * 2;
       sender.capturedExp = sender.lvl * 5;
       sender.exp = 0;
       document.querySelector(
@@ -145,18 +147,54 @@ class Monster extends Sprite {
     });
     gsap.to(this, {
       opacity: 0,
+      repeat: 5,
+      yoyo: true,
+      duration: 0.05,
     });
     audio.battle.stop();
     audio.victory.play();
   }
 
+  caught() {
+    document.querySelector(
+      "#dialogueBox"
+    ).innerHTML = `Player Caught ${enemyMonster.name}`;
+
+    gsap.to(this, {
+      opacity: 0,
+    });
+    audio.battle.stop();
+    audio.victory.play();
+  }
   miss() {
     let dodge = true;
     //napisać zasady obrony
 
     return dodge;
   }
-  attack({ attack, recipient, renderedSprites }) {
+  attacktype({ attack, recipient }) {
+    let dmg;
+
+    if (recipient.type === attack.type || recipient.type !== attack.type)
+      dmg = attack.damage;
+    if (recipient.type === "Normal" && attack.type !== "Normal")
+      dmg = attack.damage + this.dmg;
+    if (recipient.type === "Water" && attack.type === "Fire")
+      dmg = attack.damage - this.dmg;
+    if (recipient.type === "Grass" && attack.type === "Fire")
+      dmg = attack.damage + this.dmg * 2;
+    if (recipient.type === "Grass" && attack.type === "Water")
+      dmg = attack.damage - this.dmg;
+    if (recipient.type === "Ground" && attack.type === "Water")
+      dmg = attack.damage + this.dmg * 2;
+    if (recipient.type === "Ground" && attack.type === "Fire")
+      dmg = attack.damage - this.dmg * 2;
+    if (recipient.type === "Fire" && attack.type === "Water")
+      dmg = attack.damage + this.dmg * 2;
+    console.log(dmg);
+    return dmg * this.lvl;
+  }
+  attack({ attack, recipient, sender, renderedSprites }) {
     document.querySelector("#dialogueBox").style.display = "flex";
     document.querySelector(
       "#dialogueBox"
@@ -174,20 +212,66 @@ class Monster extends Sprite {
       rotation = -2.2;
     }
     if (this.miss()) {
-      recipient.health -= attack.damage;
+      recipient.health -= this.attacktype({ attack, recipient });
+
       switch (attack.name) {
         case "Tackle":
-          attackaaa.tackle(movemenDistance, healtBar, healtText, { recipient });
+          attackaaa.tackle(movemenDistance, healtBar, healtText, {
+            recipient,
+            sender,
+          });
+          break;
+        case "Jump":
+          attackaaa.jump(movemenDistance, healtBar, healtText, {
+            recipient,
+            sender,
+          });
+          break;
+        case "FastAttack":
+          attackaaa.fastattack(movemenDistance, healtBar, healtText, {
+            recipient,
+            sender,
+          });
           break;
         case "Caught":
-          attackaaa.fireball(healtBar, rotation, healtText, {
+          attackaaa.caught(rotation, {
             recipient,
+            sender,
             renderedSprites,
           });
           break;
         case "Fireball":
           attackaaa.fireball(healtBar, rotation, healtText, {
             recipient,
+            sender,
+            renderedSprites,
+          });
+          break;
+        case "Claw":
+          attackaaa.claw(healtBar, rotation, healtText, {
+            recipient,
+            sender,
+            renderedSprites,
+          });
+          break;
+        case "PlantSpike":
+          attackaaa.plantspike(healtBar, healtText, {
+            recipient,
+            sender,
+            renderedSprites,
+          });
+          break;
+        case "SheetRock":
+          attackaaa.sheetrock(healtBar, rotation, healtText, {
+            recipient,
+            sender,
+            renderedSprites,
+          });
+          break;
+        case "FrozenBall":
+          attackaaa.frozenball(healtBar, rotation, healtText, {
+            recipient,
+            sender,
             renderedSprites,
           });
           break;

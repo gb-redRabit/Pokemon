@@ -16,7 +16,7 @@ const monsters = [
     type: "Normal",
     animate: true,
     name: "Cyclope",
-    attacks: [attacks.Tackle, attacks.Fireball],
+    attacks: [attacks.Tackle, attacks.Jump, attacks.Claw, attacks.FastAttack],
   },
   {
     position: {
@@ -35,7 +35,7 @@ const monsters = [
     type: "Normal",
     animate: true,
     name: "Dragon",
-    attacks: [attacks.Tackle, attacks.Fireball],
+    attacks: [attacks.Tackle, attacks.Fireball, attacks.PlantSpike],
   },
   {
     position: {
@@ -51,10 +51,10 @@ const monsters = [
       max: 4,
       hold: 30,
     },
-    type: "Normal",
+    type: "Ground",
     animate: true,
     name: "Axolot",
-    attacks: [attacks.Tackle, attacks.Fireball],
+    attacks: [attacks.Tackle, attacks.Jump, attacks.SheetRock],
   },
   {
     position: {
@@ -73,7 +73,7 @@ const monsters = [
     type: "Normal",
     animate: true,
     name: "Butterfly",
-    attacks: [attacks.Tackle, attacks.Fireball],
+    attacks: [attacks.Tackle, attacks.Claw, attacks.PlantSpike],
   },
   {
     position: {
@@ -89,10 +89,10 @@ const monsters = [
       max: 4,
       hold: 30,
     },
-    type: "Normal",
+    type: "Fire",
     animate: true,
     name: "Flam",
-    attacks: [attacks.Tackle, attacks.Fireball],
+    attacks: [attacks.Tackle, attacks.FastAttack, attacks.Fireball],
   },
   {
     position: {
@@ -111,7 +111,14 @@ const monsters = [
     type: "Normal",
     animate: true,
     name: "GoldRacoon",
-    attacks: [attacks.Tackle, attacks.Fireball],
+    attacks: [
+      attacks.Tackle,
+      attacks.Jump,
+      attacks.FastAttack,
+      attacks.Claw,
+      attacks.Fireball,
+      attacks.PlantSpike,
+    ],
   },
   {
     position: {
@@ -130,7 +137,13 @@ const monsters = [
     type: "Normal",
     animate: true,
     name: "Racoon",
-    attacks: [attacks.Tackle, attacks.Fireball],
+    attacks: [
+      attacks.Tackle,
+      attacks.Jump,
+      attacks.Claw,
+      attacks.Fireball,
+      attacks.PlantSpike,
+    ],
   },
   {
     position: {
@@ -146,10 +159,10 @@ const monsters = [
       max: 4,
       hold: 30,
     },
-    type: "Normal",
+    type: "Water",
     animate: true,
     name: "Reptile",
-    attacks: [attacks.Tackle, attacks.Fireball],
+    attacks: [attacks.Tackle, attacks.Jump, attacks.FrozenBall],
   },
   {
     position: {
@@ -165,10 +178,10 @@ const monsters = [
       max: 4,
       hold: 30,
     },
-    type: "Normal",
+    type: "Grass",
     animate: true,
     name: "Slime",
-    attacks: [attacks.Tackle, attacks.Fireball],
+    attacks: [attacks.Tackle, attacks.Jump, attacks.PlantSpike],
   },
   {
     position: {
@@ -184,9 +197,9 @@ const monsters = [
       max: 4,
       hold: 30,
     },
-    type: "Normal",
+    type: "Grass",
     animate: true,
     name: "Snake",
-    attacks: [attacks.Tackle, attacks.Fireball],
+    attacks: [attacks.Tackle, attacks.Claw, attacks.PlantSpike],
   },
 ];

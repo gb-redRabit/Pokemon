@@ -322,7 +322,7 @@ const animate = () => {
   }
 };
 
-animate();
+// animate();
 
 window.addEventListener("keydown", (e) => {
   switch (e.key) {
