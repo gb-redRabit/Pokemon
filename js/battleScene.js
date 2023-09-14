@@ -89,9 +89,6 @@ const initBattle = () => {
           renderedSprites,
         });
         queue.push(() => {
-          enemyMonster.caught();
-        });
-        queue.push(() => {
           gsap.to("#overlappingDiv", {
             opacity: 1,
             onComplete: () => {

@@ -48,7 +48,7 @@ document.querySelector("#bag").addEventListener("click", () => {
         item.attacks.forEach((at) => {
           div3.innerHTML += `<p>${
             at.name !== "Caught"
-              ? `${at.name} dmg: ${at.damage} type: ${at.type}`
+              ? `${at.name} dmg: ${at.damage + item.dmg} type: ${at.type}`
               : ""
           } </p>`;
         });

@@ -32,7 +32,7 @@ class Monster extends Sprite {
     this.exp = 0;
     this.giveExp = Math.floor((this.lvl * 10 + 9) / 6);
     this.capturedExp = this.lvl * 5;
-    this.health = this.health ? this.health : this.lvl * 2;
+    this.health = this.health ? this.health : Math.floor(Math.random() * 20);
     for (let i = 0; i < this.lvl + 1; i++) {
       this.health = this.health + Math.floor(Math.random() * 10);
     }
@@ -100,10 +100,10 @@ class Monster extends Sprite {
     sender.exp += recipient.giveExp;
     if (sender.capturedExp <= sender.exp) {
       let up = sender.exp - sender.capturedExp;
-      sender.health += Math.floor(Math.random() * 20 + 1);
-      sender.healthMax = sender.health;
+      sender.healthMax = sender.healthMax + Math.floor(Math.random() * 10 + 10);
+      sender.health = sender.healthMax;
       sender.lvl++;
-      sender.dmg = sender.lvl * 2;
+      sender.dmg += sender.lvl + Math.floor(Math.random() * 10 + 1);
       sender.capturedExp = sender.lvl * 5;
       sender.exp = 0;
       document.querySelector(
@@ -116,6 +116,7 @@ class Monster extends Sprite {
   }
 
   hit(healtBar, healtText, { recipient }) {
+    console.log();
     document.querySelector(healtText).innerText = `${
       recipient.health > 0 ? recipient.health : 0
     }/${recipient.healthMax}`;
@@ -159,7 +160,6 @@ class Monster extends Sprite {
     document.querySelector(
       "#dialogueBox"
     ).innerHTML = `Player Caught ${enemyMonster.name}`;
-
     gsap.to(this, {
       opacity: 0,
     });
@@ -168,7 +168,7 @@ class Monster extends Sprite {
   }
 
   miss() {
-    let dodge = true;
+    let dodge = false;
     //napisać zasady obrony
 
     return dodge;
@@ -192,14 +192,15 @@ class Monster extends Sprite {
       dmg = attack.damage - this.dmg * 2;
     if (recipient.type === "Fire" && attack.type === "Water")
       dmg = attack.damage + this.dmg * 2;
-    return dmg * this.lvl;
+    if (dmg < 0) dmg = attack.damage;
+    return dmg;
   }
 
   attack({ attack, recipient, sender, renderedSprites }) {
     document.querySelector("#dialogueBox").style.display = "flex";
     document.querySelector(
       "#dialogueBox"
-    ).innerHTML = `${recipient.name} used ${attack.name}`;
+    ).innerHTML = `${sender.name} used ${attack.name}`;
 
     let movemenDistance = 20;
     let healtBar = "#enemyHealtBar";
@@ -212,9 +213,10 @@ class Monster extends Sprite {
       healtText = "#playerHp";
       rotation = -2.2;
     }
-    if (this.miss()) {
+    if ("PlantSpike" === attack.name) rotation = -0.6;
+    if ("PlantSpike" === attack.name && this.isEnemy) rotation = 2.5;
+    if (!this.miss()) {
       recipient.health -= this.attacktype({ attack, recipient });
-
       switch (attack.name) {
         case "Tackle":
           attackaaa.tackle(movemenDistance, healtBar, healtText, {
@@ -249,14 +251,14 @@ class Monster extends Sprite {
           });
           break;
         case "Claw":
-          attackaaa.claw(healtBar, rotation, healtText, {
+          attackaaa.claw(movemenDistance, healtBar, rotation, healtText, {
             recipient,
             sender,
             renderedSprites,
           });
           break;
         case "PlantSpike":
-          attackaaa.plantspike(healtBar, healtText, {
+          attackaaa.plantspike(healtBar, rotation, healtText, {
             recipient,
             sender,
             renderedSprites,

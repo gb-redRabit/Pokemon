@@ -1,13 +1,13 @@
 class Attack {
   caught(rotation, { recipient, sender, renderedSprites }) {
-    const fireBallImage = new Image();
-    fireBallImage.src = "./img/pokeboll.png";
-    const fireBall = new Sprite({
+    const spellImage = new Image();
+    spellImage.src = "./img/pokeboll.png";
+    const spell = new Sprite({
       position: {
         x: sender.position.x,
         y: sender.position.y,
       },
-      img: fireBallImage,
+      img: spellImage,
       frames: {
         max: 1,
         hold: 10,
@@ -15,9 +15,9 @@ class Attack {
       animate: true,
       rotation,
     });
-    renderedSprites.splice(1, 0, fireBall);
+    renderedSprites.splice(1, 0, spell);
 
-    gsap.to(fireBall.position, {
+    gsap.to(spell.position, {
       x: recipient.position.x,
       y: recipient.position.y,
       onComplete: () => {
@@ -27,16 +27,21 @@ class Attack {
       },
     });
   }
-  claw(healtBar, rotation, healtText, { recipient, sender, renderedSprites }) {
-    audio.initFireball.play();
-    const fireBallImage = new Image();
-    fireBallImage.src = "./img/skill/claw.png";
-    const fireBall = new Sprite({
+  claw(
+    movemenDistance,
+    healtBar,
+    rotation,
+    healtText,
+    { recipient, sender, renderedSprites }
+  ) {
+    const spellImage = new Image();
+    spellImage.src = "./img/skill/claw.png";
+    const spell = new Sprite({
       position: {
         x: recipient.position.x,
         y: recipient.position.y,
       },
-      img: fireBallImage,
+      img: spellImage,
       frames: {
         max: 4,
         hold: 10,
@@ -44,39 +49,63 @@ class Attack {
       animate: true,
       rotation,
     });
-    renderedSprites.splice(1, 0, fireBall);
+    const tl = gsap.timeline();
 
-    gsap.to(fireBall.position, {
-      x: recipient.position.x,
-      y: recipient.position.y,
+    tl.to(sender.position, {
+      x: recipient.position.x - movemenDistance * 2,
+      y: recipient.position.y + movemenDistance * 2,
+      duration: 0.3,
       onComplete: () => {
-        audio.fireballHit.play();
-        renderedSprites.splice(1, 1);
-        sender.hit(healtBar, healtText, { recipient });
+        audio.tackleHit.play();
+        renderedSprites.splice(2, 1, spell);
       },
-    });
+    })
+      .to(spell.position, {
+        x: recipient.position.x,
+        y: recipient.position.y,
+        onComplete: () => {
+          sender.isEnemy = !sender.isEnemy;
+          renderedSprites.splice(2, 1);
+          sender.hit(healtBar, healtText, { recipient });
+        },
+      })
+      .to(spell.position, {
+        duration: 0.1,
+      })
+      .to(sender.position, {
+        x: sender.position.x,
+        y: sender.position.y,
+        onComplete: () => {
+          sender.isEnemy = !sender.isEnemy;
+        },
+      });
   }
 
-  plantspike(healtBar, healtText, { recipient, sender, renderedSprites }) {
+  plantspike(
+    healtBar,
+    rotation,
+    healtText,
+    { recipient, sender, renderedSprites }
+  ) {
     audio.initFireball.play();
-    const fireBallImage = new Image();
-    fireBallImage.src = "./img/skill/PlantSpike.png";
-    const fireBall = new Sprite({
+    const spellImage = new Image();
+    spellImage.src = "./img/skill/PlantSpike.png";
+    const spell = new Sprite({
       position: {
         x: sender.position.x,
         y: sender.position.y,
       },
-      img: fireBallImage,
+      img: spellImage,
       frames: {
         max: 4,
         hold: 10,
       },
       animate: true,
-      rotation: -0.6,
+      rotation,
     });
-    renderedSprites.splice(1, 0, fireBall);
+    renderedSprites.splice(1, 0, spell);
 
-    gsap.to(fireBall.position, {
+    gsap.to(spell.position, {
       x: recipient.position.x,
       y: recipient.position.y,
       onComplete: () => {
@@ -94,14 +123,14 @@ class Attack {
     { recipient, sender, renderedSprites }
   ) {
     audio.initFireball.play();
-    const fireBallImage = new Image();
-    fireBallImage.src = "./img/skill/fireball.png";
-    const fireBall = new Sprite({
+    const spellImage = new Image();
+    spellImage.src = "./img/skill/fireball.png";
+    const spell = new Sprite({
       position: {
         x: sender.position.x,
         y: sender.position.y,
       },
-      img: fireBallImage,
+      img: spellImage,
       frames: {
         max: 4,
         hold: 10,
@@ -109,9 +138,9 @@ class Attack {
       animate: true,
       rotation,
     });
-    renderedSprites.splice(1, 0, fireBall);
+    renderedSprites.splice(1, 0, spell);
 
-    gsap.to(fireBall.position, {
+    gsap.to(spell.position, {
       x: recipient.position.x,
       y: recipient.position.y,
       onComplete: () => {
@@ -128,14 +157,14 @@ class Attack {
     { recipient, sender, renderedSprites }
   ) {
     audio.initFireball.play();
-    const fireBallImage = new Image();
-    fireBallImage.src = "./img/skill/FrozenBall.png";
-    const fireBall = new Sprite({
+    const spellImage = new Image();
+    spellImage.src = "./img/skill/FrozenBall.png";
+    const spell = new Sprite({
       position: {
         x: sender.position.x,
         y: sender.position.y,
       },
-      img: fireBallImage,
+      img: spellImage,
       frames: {
         max: 4,
         hold: 10,
@@ -143,9 +172,9 @@ class Attack {
       animate: true,
       rotation,
     });
-    renderedSprites.splice(1, 0, fireBall);
+    renderedSprites.splice(1, 0, spell);
 
-    gsap.to(fireBall.position, {
+    gsap.to(spell.position, {
       x: recipient.position.x,
       y: recipient.position.y,
       onComplete: () => {
@@ -162,14 +191,14 @@ class Attack {
     { recipient, sender, renderedSprites }
   ) {
     audio.initFireball.play();
-    const fireBallImage = new Image();
-    fireBallImage.src = "./img/skill/SheetRock.png";
-    const fireBall = new Sprite({
+    const spellImage = new Image();
+    spellImage.src = "./img/skill/SheetRock.png";
+    const spell = new Sprite({
       position: {
         x: sender.position.x,
         y: sender.position.y,
       },
-      img: fireBallImage,
+      img: spellImage,
       frames: {
         max: 4,
         hold: 10,
@@ -177,9 +206,9 @@ class Attack {
       animate: true,
       rotation,
     });
-    renderedSprites.splice(1, 0, fireBall);
+    renderedSprites.splice(1, 0, spell);
 
-    gsap.to(fireBall.position, {
+    gsap.to(spell.position, {
       x: recipient.position.x,
       y: recipient.position.y,
       onComplete: () => {
@@ -260,6 +289,7 @@ class Attack {
         x: recipient.position.x,
         y: recipient.position.y,
         onComplete: () => {
+          sender.isEnemy = !sender.isEnemy;
           audio.tackleHit.play();
           sender.hit(healtBar, healtText, { recipient });
         },
@@ -267,6 +297,10 @@ class Attack {
       .to(sender.position, {
         x: sender.position.x,
         y: sender.position.y,
+        duration: 1,
+        onComplete: () => {
+          sender.isEnemy = !sender.isEnemy;
+        },
       });
   }
 }
