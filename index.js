@@ -6,33 +6,21 @@ canvas.height = 576;
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 let activeMonsterPlayer;
 let flaga = false;
-let lastKey = "";
 const boundaries = [];
 const battleZones = [];
 const startPlayerZone = [];
-const offset = { x: -548, y: -795 };
+
+const offset = { x: -1300, y: -2295 };
 const collisionsMap = [];
 const battleZonesMap = [];
 const startMap = [];
-const image = new Image();
-image.src = "./img/background/map.png";
-
-const imageForeground = new Image();
-imageForeground.src = "./img/background/foreground.png";
-
-const playerDownImage = new Image();
-playerDownImage.src = "./img/playerDown.png";
-
-const playerUpImage = new Image();
-playerUpImage.src = "./img/playerUp.png";
-
-const playerLeftImage = new Image();
-playerLeftImage.src = "./img/playerLeft.png";
-
-const playerRightImage = new Image();
-playerRightImage.src = "./img/playerRight.png";
-
-let enemyMonster, playerMonster, battleAnimationId, renderedSprites, queue;
+const homeMap = [];
+let enemyMonster,
+  playerMonster,
+  battleAnimationId,
+  homeId,
+  renderedSprites,
+  queue;
 const randomMonster = Math.floor(Math.random() * monsters.length);
 playerMonster = new Monster({
   position: {
@@ -58,16 +46,34 @@ playerMonster = new Monster({
 let tab = [playerMonster];
 activeMonsterPlayer = tab[0];
 
-for (let i = 0; i < collisions.length; i += 70) {
-  collisionsMap.push(collisions.slice(i, i + 70));
+const image = new Image();
+image.src = "./img/background/map2.png";
+
+const imageForeground = new Image();
+imageForeground.src = "./img/background/foreground2.png";
+
+const playerDownImage = new Image();
+playerDownImage.src = "./img/playerDown.png";
+
+const playerUpImage = new Image();
+playerUpImage.src = "./img/playerUp.png";
+
+const playerLeftImage = new Image();
+playerLeftImage.src = "./img/playerLeft.png";
+
+const playerRightImage = new Image();
+playerRightImage.src = "./img/playerRight.png";
+
+for (let i = 0; i < collisions.length; i += 80) {
+  collisionsMap.push(collisions.slice(i, i + 80));
 }
 
-for (let i = 0; i < battleZonesData.length; i += 70) {
-  battleZonesMap.push(battleZonesData.slice(i, 70 + i));
+for (let i = 0; i < battleZonesData.length; i += 80) {
+  battleZonesMap.push(battleZonesData.slice(i, 80 + i));
 }
 
-for (let i = 0; i < startPlayer.length; i += 70) {
-  startMap.push(startPlayer.slice(i, 70 + i));
+for (let i = 0; i < startPlayer.length; i += 80) {
+  startMap.push(startPlayer.slice(i, 80 + i));
 }
 
 const background = new Sprite({
@@ -80,20 +86,6 @@ const foreground = new Sprite({
   img: imageForeground,
 });
 
-const keys = {
-  w: {
-    pressed: false,
-  },
-  s: {
-    pressed: false,
-  },
-  a: {
-    pressed: false,
-  },
-  d: {
-    pressed: false,
-  },
-};
 const battle = {
   initiated: false,
 };
@@ -140,11 +132,11 @@ startMap.forEach((row, i) => {
   });
 });
 
-const movables = [background, ...boundaries, foreground, ...battleZones];
+const movablesMap = [background, ...boundaries, foreground, ...battleZones];
 const player = new Sprite({
   position: {
-    x: startPlayerZone[0].position.x,
-    y: startPlayerZone[0].position.y - 21,
+    x: startPlayerZone[0].position.x + 7,
+    y: startPlayerZone[0].position.y,
   },
   img: playerDownImage,
   frames: { max: 4, hold: 10 },
@@ -179,12 +171,13 @@ const animate = () => {
 
   player.draw();
   foreground.draw();
-  let moving = true;
+
   player.animate = false;
 
   if (battle.initiated) return;
 
   if (keys.w.pressed || keys.a.pressed || keys.s.pressed || keys.d.pressed) {
+    //battel
     for (let i = 0; i < battleZones.length; i++) {
       const battleZone = battleZones[i];
       const overlappingArea =
@@ -242,125 +235,10 @@ const animate = () => {
     }
   }
 
-  if (keys.w.pressed && lastKey === "w") {
-    player.animate = true;
-    player.img = player.sprites.up;
-    for (let i = 0; i < boundaries.length; i++) {
-      const boundary = boundaries[i];
-      if (
-        rectangularCollision({
-          rectangle1: player,
-          rectangle2: {
-            ...boundary,
-            position: { x: boundary.position.x, y: boundary.position.y + 3 },
-          },
-        })
-      ) {
-        moving = false;
-        break;
-      }
-    }
-
-    if (moving) movables.forEach((item) => (item.position.y += 3));
-  } else if (keys.s.pressed && lastKey === "s") {
-    player.animate = true;
-    player.img = player.sprites.down;
-    for (let i = 0; i < boundaries.length; i++) {
-      const boundary = boundaries[i];
-      if (
-        rectangularCollision({
-          rectangle1: player,
-          rectangle2: {
-            ...boundary,
-            position: { x: boundary.position.x, y: boundary.position.y - 3 },
-          },
-        })
-      ) {
-        moving = false;
-        break;
-      }
-    }
-    if (moving) movables.forEach((item) => (item.position.y -= 3));
-  } else if (keys.a.pressed && lastKey === "a") {
-    player.animate = true;
-    player.img = player.sprites.left;
-    for (let i = 0; i < boundaries.length; i++) {
-      const boundary = boundaries[i];
-      if (
-        rectangularCollision({
-          rectangle1: player,
-          rectangle2: {
-            ...boundary,
-            position: { x: boundary.position.x + 3, y: boundary.position.y },
-          },
-        })
-      ) {
-        moving = false;
-        break;
-      }
-    }
-    if (moving) movables.forEach((item) => (item.position.x += 3));
-  } else if (keys.d.pressed && lastKey === "d") {
-    player.animate = true;
-    player.img = player.sprites.right;
-    for (let i = 0; i < boundaries.length; i++) {
-      const boundary = boundaries[i];
-      if (
-        rectangularCollision({
-          rectangle1: player,
-          rectangle2: {
-            ...boundary,
-            position: { x: boundary.position.x - 3, y: boundary.position.y },
-          },
-        })
-      ) {
-        moving = false;
-        break;
-      }
-    }
-    if (moving) movables.forEach((item) => (item.position.x -= 3));
-  }
+  movePlayer(player, boundaries, movablesMap);
 };
 
-// animate();
-
-window.addEventListener("keydown", (e) => {
-  switch (e.key) {
-    case "w":
-      keys.w.pressed = true;
-      lastKey = "w";
-      break;
-    case "s":
-      keys.s.pressed = true;
-      lastKey = "s";
-      break;
-    case "a":
-      keys.a.pressed = true;
-      lastKey = "a";
-      break;
-    case "d":
-      keys.d.pressed = true;
-      lastKey = "d";
-      break;
-  }
-});
-
-window.addEventListener("keyup", (e) => {
-  switch (e.key) {
-    case "w":
-      keys.w.pressed = false;
-      break;
-    case "s":
-      keys.s.pressed = false;
-      break;
-    case "a":
-      keys.a.pressed = false;
-      break;
-    case "d":
-      keys.d.pressed = false;
-      break;
-  }
-});
+animate();
 
 let clicked = false;
 addEventListener("click", () => {

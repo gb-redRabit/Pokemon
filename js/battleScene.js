@@ -216,8 +216,8 @@ const animateBattel = () => {
     sprite.draw();
   });
 };
-initBattle();
-animateBattel();
+// initBattle();
+// animateBattel();
 document.querySelector("#dialogueBox").addEventListener("click", (e) => {
   if (queue.length > 0) {
     queue[0]();
