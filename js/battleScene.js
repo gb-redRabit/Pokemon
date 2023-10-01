@@ -101,8 +101,8 @@ const initBattle = () => {
               battle.initiated = false;
               const newMonster = new Monster({
                 position: {
-                  x: 0,
-                  y: 0,
+                  x: 300,
+                  y: 340,
                 },
                 faceset: enemyMonster.faceset,
                 img: {
